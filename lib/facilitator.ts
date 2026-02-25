@@ -15,7 +15,7 @@ export function getFacilitator(): x402Facilitator {
   if (!privateKey) throw new Error('FACILITATOR_PRIVATE_KEY environment variable is required')
 
   const account = privateKeyToAccount(privateKey as `0x${string}`)
-  const client = createWalletClient({ account, chain: baseSepolia, transport: http() }).extend(
+  const client = createWalletClient({ account, chain: baseSepolia, transport: http(process.env.RPC_URL) }).extend(
     publicActions,
   )
 
