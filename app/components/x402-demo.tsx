@@ -652,59 +652,6 @@ export function X402Demo() {
         {/* Live feed */}
         <LiveFeed />
 
-        {/* MCP section */}
-        <div className="border border-zinc-800 rounded-xl p-6 space-y-4">
-          <div>
-            <h2 className="text-sm font-semibold text-white">Use with Claude (MCP)</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              The x402-mcp server lets Claude make paid requests using your Tomorrow wallet
-            </p>
-          </div>
-
-          <pre className="text-xs bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 overflow-x-auto text-zinc-400 leading-relaxed">
-            <span className="text-zinc-600"># .mcp.json</span>{'\n'}
-            <span className="text-white">{'{'}</span>{'\n'}
-            {'  '}<span className="text-emerald-400">&quot;mcpServers&quot;</span>
-            <span className="text-white">{': {'}</span>{'\n'}
-            {'    '}<span className="text-blue-400">&quot;x402-wallet&quot;</span>
-            <span className="text-white">{': {'}</span>{'\n'}
-            {'      '}<span className="text-zinc-400">&quot;command&quot;</span>
-            <span className="text-white">{': '}</span>
-            <span className="text-amber-400">&quot;node&quot;</span>
-            <span className="text-white">,</span>{'\n'}
-            {'      '}<span className="text-zinc-400">&quot;args&quot;</span>
-            <span className="text-white">{': ['}</span>
-            <span className="text-amber-400">&quot;packages/x402-mcp/dist/index.js&quot;</span>
-            <span className="text-white">{'],'}</span>{'\n'}
-            {'      '}<span className="text-zinc-400">&quot;env&quot;</span>
-            <span className="text-white">{': {'}</span>
-            <span className="text-emerald-400">&quot;X402_CHAIN&quot;</span>
-            <span className="text-white">{': '}</span>
-            <span className="text-amber-400">&quot;base-sepolia&quot;</span>
-            <span className="text-white">{' }'}</span>{'\n'}
-            {'    '}<span className="text-white">{'}'}</span>{'\n'}
-            {'  '}<span className="text-white">{'}'}</span>{'\n'}
-            <span className="text-white">{'}'}</span>
-          </pre>
-
-          <div className="space-y-2">
-            <p className="text-xs text-zinc-500">Then in Claude:</p>
-            <div className="space-y-1.5">
-              {[
-                ['x402_connect', 'Pair your Tomorrow wallet via WalletConnect'],
-                ['x402_fetch url=https://x402.llmer.com/api/cowsays', 'Pay and fetch — auto-signed by policy'],
-              ].map(([cmd, desc]) => (
-                <div key={cmd} className="flex items-start gap-3">
-                  <code className="text-xs text-blue-400 bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 shrink-0">
-                    {cmd}
-                  </code>
-                  <span className="text-xs text-zinc-500">{desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Footer */}
         <div className="text-xs text-zinc-600 text-center pb-4">
           Base Sepolia · Chain ID 84532 · USDC{' '}
