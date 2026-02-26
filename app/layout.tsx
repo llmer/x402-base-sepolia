@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://x402.llmer.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://x402.llmer.com"),
   title: "x402 demo · Base Sepolia",
   description:
     "Interactive demo of the HTTP 402 Payment Required protocol on Base Sepolia. Pay-per-request APIs with USDC.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "x402 demo · Base Sepolia",
     description:
       "Interactive demo of the HTTP 402 Payment Required protocol on Base Sepolia. Pay-per-request APIs with USDC.",
-    url: "https://x402.llmer.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://x402.llmer.com",
     siteName: "x402 demo",
     type: "website",
   },

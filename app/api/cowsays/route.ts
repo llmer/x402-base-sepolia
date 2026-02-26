@@ -1,5 +1,6 @@
 import { getFacilitator } from '@/lib/facilitator'
 import { emit } from '@/lib/events'
+import { USDC_BASE_SEPOLIA } from '@/lib/constants'
 import {
   encodePaymentRequiredHeader,
   encodePaymentResponseHeader,
@@ -8,7 +9,6 @@ import {
 import type { PaymentRequirements } from '@x402/core/types'
 
 const PRICE = '1000' // 0.001 USDC (6 decimals)
-const USDC_BASE_SEPOLIA = '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
 
 const QUOTES = [
   'The best way to predict the future is to invent it. — Alan Kay',

@@ -8,10 +8,10 @@ import { x402Client } from '@x402/core/client'
 import { registerExactEvmScheme } from '@x402/evm/exact/client'
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http'
 import type { ClientEvmSigner } from '@x402/evm'
+import { USDC_BASE_SEPOLIA } from '@/lib/constants'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const USDC_BASE_SEPOLIA = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const
 const BASE_SEPOLIA_CHAIN_ID_HEX = '0x14a34' // 84532
 const QUOTE_ENDPOINT = '/api/cowsays'
 const BASESCAN_TX = (tx: string) => `https://sepolia.basescan.org/tx/${tx}`

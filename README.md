@@ -1,150 +1,110 @@
-# Next.js + Tailwind CSS + shadcn/ui Template
+# x402 demo · Base Sepolia
 
-A modern, production-ready Next.js template with Tailwind CSS v4 and shadcn/ui pre-configured. Perfect for quickly starting new web applications with a solid foundation.
+An interactive demo of the HTTP 402 Payment Required protocol — pay-per-request APIs with USDC, no subscriptions, no API keys.
 
-## Tech Stack
+**Live demo:** https://x402.llmer.com
 
-- **[Next.js 16](https://nextjs.org)** - React framework with App Router
-- **[React 19](https://react.dev)** - Latest React with modern features
-- **[Tailwind CSS v4](https://tailwindcss.com)** - Utility-first CSS framework
-- **[shadcn/ui](https://ui.shadcn.com)** - Re-usable components built with Radix UI
-- **[TypeScript](https://www.typescriptlang.org)** - Type safety
-- **[Phosphor Icons](https://phosphoricons.com)** - Beautiful icon library
+---
 
-## Features
+## What is x402?
 
-- Latest Next.js 16 with App Router
-- Tailwind CSS v4 with PostCSS
-- shadcn/ui configured with "new-york" style
-- Dark mode support with CSS variables
-- Path aliases configured (`@/components`, `@/lib`, etc.)
-- TypeScript for type safety
-- ESLint configured
-- Geist font family included
+HTTP 402 was reserved in 1991 for "Payment Required" but never standardized. The x402 protocol revives it: a server returns `402` with a `PAYMENT-REQUIRED` header describing what's owed, the client signs an EIP-3009 authorization (no gas required, no broadcast), and retries with a `PAYMENT-SIGNATURE` header. The server settles the transfer on-chain and returns the real response. The whole round-trip adds one extra HTTP hop.
 
-## Getting Started
+## How it works
 
-### Using this Template
+```
+1. GET /api/cowsays
+        ← 402 + PAYMENT-REQUIRED header (amount, asset, recipient, network)
 
-Click "Use this template" on GitHub or clone the repository:
+2. Client signs EIP-3009 transferWithAuthorization
+        (MetaMask popup, no gas required)
 
-```bash
-git clone https://github.com/llmer/nextjs-tailwind-shadcn.git
-cd nextjs-tailwind-shadcn
+3. GET /api/cowsays  +  PAYMENT-SIGNATURE: <signed payload>
+        ← 200 + cowsay ASCII art  +  tx hash in response headers
 ```
 
-### Installation
+## Live demo
 
-Install dependencies using pnpm (recommended), npm, yarn, or bun:
+Try it at **https://x402.llmer.com** — connect MetaMask on Base Sepolia, get test USDC from the [Circle faucet](https://faucet.circle.com), and pay 0.001 USDC to call the API.
+
+---
+
+## Getting started
+
+### Clone and install
 
 ```bash
+git clone https://github.com/llmer/x402-base-sepolia.git
+cd x402-base-sepolia
 pnpm install
-# or
-npm install
-# or
-yarn install
-# or
-bun install
 ```
 
-### Development
+### Configure environment
 
-Run the development server:
+Create `.env.local`:
 
 ```bash
-pnpm dev
-# or
-npm run dev
-# or
-yarn dev
-# or
-bun dev
+# Required: wallet that signs on-chain settlements (needs Base Sepolia ETH for gas)
+FACILITATOR_PRIVATE_KEY=0x...
+
+# Optional: address to receive USDC payments (defaults to facilitator address)
+PAYTO_ADDRESS=0x...
+
+# Optional: Base Sepolia RPC (defaults to https://sepolia.base.org)
+RPC_URL=https://...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+**Faucets:**
+- USDC (Base Sepolia): https://faucet.circle.com
+- ETH (Base Sepolia): https://faucet.quicknode.com/base/sepolia
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-### Build
-
-Create a production build:
+### Run
 
 ```bash
-pnpm build
-# or
-npm run build
+pnpm dev   # http://localhost:3000
 ```
 
-## Adding shadcn/ui Components
+---
 
-This template is pre-configured with shadcn/ui. Add components using:
+## API reference
 
-```bash
-npx shadcn@latest add button
-npx shadcn@latest add card
-# etc.
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/cowsays` | GET | Paid endpoint — returns `402` without a valid payment signature, `200` cowsay ASCII art with one |
+| `/api/events` | GET | SSE stream of live payment events (`probe` / `paid` / `failed`) |
+| `/api/facilitator/verify` | POST | Verify a payment payload |
+| `/api/facilitator/settle` | POST | Settle a payment payload on-chain |
+| `/api/facilitator/supported` | GET | Returns supported schemes and networks |
+
+---
+
+## Tech stack
+
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| x402 | `@x402/core` + `@x402/evm` |
+| Ethereum | viem |
+| Network | Base Sepolia (`eip155:84532`) |
+| Payment asset | USDC (`0x036CbD53842c5426634e7929541eC2318f3dCF7e`) |
+
+---
+
+## Project structure
+
+```
+app/
+  api/cowsays/route.ts            x402 paid endpoint
+  api/events/route.ts             SSE live payment feed
+  api/facilitator/*/route.ts      verify, settle, supported
+  components/x402-demo.tsx        client-side payment flow UI
+lib/
+  facilitator.ts                  x402Facilitator singleton (verify + settle)
+  events.ts                       in-memory event bus for live feed
 ```
 
-Components will be added to `components/ui/` automatically.
-
-## Project Structure
-
-```
-.
-├── app/                # Next.js App Router
-│   ├── layout.tsx     # Root layout
-│   ├── page.tsx       # Homepage
-│   └── globals.css    # Global styles with Tailwind
-├── components/         # React components (created when adding shadcn/ui)
-├── lib/               # Utility functions
-│   └── utils.ts       # cn() helper for class merging
-├── public/            # Static assets
-└── components.json    # shadcn/ui configuration
-```
-
-## Customization
-
-### Theme
-
-Modify theme colors in `app/globals.css` using CSS variables (lines 46-113).
-
-### Fonts
-
-The template uses Geist Sans and Geist Mono. Change fonts in `app/layout.tsx`.
-
-### shadcn/ui Configuration
-
-Configuration is in `components.json`. Modify settings like style, base color, and path aliases.
-
-## Deploy
-
-### Vercel (Recommended)
-
-The easiest way to deploy is using [Vercel](https://vercel.com/new):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/llmer/nextjs-tailwind-shadcn)
-
-### Other Platforms
-
-This template works with any platform that supports Next.js:
-- [Netlify](https://www.netlify.com)
-- [Railway](https://railway.app)
-- [Render](https://render.com)
-- Self-hosted
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for details.
-
-## Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com)
-- [React Documentation](https://react.dev)
+---
 
 ## License
 
-MIT - See [LICENSE.txt](LICENSE.txt) for details.
-
-## Repository
-
-[https://github.com/llmer/nextjs-tailwind-shadcn](https://github.com/llmer/nextjs-tailwind-shadcn)
+MIT
