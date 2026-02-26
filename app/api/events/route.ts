@@ -12,6 +12,11 @@ export function GET() {
 
   const stream = new ReadableStream({
     start(controller) {
+      // Send an initial comment so the browser receives the first byte
+      // immediately and fires EventSource.onopen without waiting for
+      // the first real event or the 25 s heartbeat.
+      controller.enqueue(encoder.encode(': ok\n\n'))
+
       unsubscribe = subscribe((event) => {
         try {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
