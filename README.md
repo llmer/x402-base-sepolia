@@ -52,6 +52,13 @@ PAYTO_ADDRESS=0x...
 
 # Optional: Base Sepolia RPC (defaults to https://sepolia.base.org)
 RPC_URL=https://...
+
+# Optional: deployed URL for OG metadata, sitemap, discovery doc
+NEXT_PUBLIC_SITE_URL=https://x402.llmer.com
+
+# Optional: Upstash Redis for rate limiting (middleware passes through if unset)
+KV_REST_API_URL=https://...
+KV_REST_API_TOKEN=...
 ```
 
 **Faucets:**
@@ -70,11 +77,11 @@ pnpm dev   # http://localhost:3000
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/api/cowsays` | GET | Paid endpoint — returns `402` without a valid payment signature, `200` cowsay ASCII art with one |
+| `/api/cowsays` | GET | Paid endpoint — returns `402` without a valid payment signature, `200` with cowsay ASCII art when paid |
 | `/api/events` | GET | SSE stream of live payment events (`probe` / `paid` / `failed`) |
-| `/api/facilitator/verify` | POST | Verify a payment payload |
-| `/api/facilitator/settle` | POST | Settle a payment payload on-chain |
 | `/api/facilitator/supported` | GET | Returns supported schemes and networks |
+| `/api/facilitator/balance` | GET | Returns facilitator wallet address and ETH balance |
+| `/.well-known/x402` | GET | x402 discovery document (lists paid resources + ownership proof) |
 
 ---
 
@@ -87,6 +94,8 @@ pnpm dev   # http://localhost:3000
 | Ethereum | viem |
 | Network | Base Sepolia (`eip155:84532`) |
 | Payment asset | USDC (`0x036CbD53842c5426634e7929541eC2318f3dCF7e`) |
+| Rate limiting | `@upstash/ratelimit` + `@upstash/redis` |
+| Validation | zod + zod-to-json-schema |
 
 ---
 
@@ -94,13 +103,18 @@ pnpm dev   # http://localhost:3000
 
 ```
 app/
-  api/cowsays/route.ts            x402 paid endpoint
-  api/events/route.ts             SSE live payment feed
-  api/facilitator/*/route.ts      verify, settle, supported
-  components/x402-demo.tsx        client-side payment flow UI
+  .well-known/x402/route.ts        x402 discovery document + ownership proof
+  api/cowsays/route.ts              x402 paid endpoint (verify + settle inline)
+  api/events/route.ts               SSE live payment feed
+  api/facilitator/balance/route.ts  facilitator ETH balance check
+  api/facilitator/supported/route.ts  supported schemes and networks
+  components/x402-demo.tsx          client-side payment flow UI
 lib/
-  facilitator.ts                  x402Facilitator singleton (verify + settle)
-  events.ts                       in-memory event bus for live feed
+  constants.ts                      USDC contract address
+  events.ts                         in-memory event bus for live feed
+  facilitator.ts                    x402Facilitator singleton (verify + settle)
+  rate-limit.ts                     Upstash Redis rate limiting config
+proxy.ts                            rate-limit middleware for API routes
 ```
 
 ---
