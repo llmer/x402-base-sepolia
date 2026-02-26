@@ -2,6 +2,10 @@
   "name": "x402-base-sepolia",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/llmer/x402-base-sepolia.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "pnpm lint && next build",

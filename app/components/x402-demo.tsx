@@ -728,6 +728,15 @@ export function X402Demo() {
           >
             {shortAddr(USDC_BASE_SEPOLIA)}
           </a>
+          {' · '}
+          <a
+            href="https://github.com/llmer/x402-base-sepolia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-zinc-400 underline"
+          >
+            GitHub
+          </a>
         </div>
       </main>
     </div>
