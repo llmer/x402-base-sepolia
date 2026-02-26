@@ -175,7 +175,7 @@ function LiveFeed() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-white">Live requests</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">Ephemeral — resets on server restart</p>
+          <p className="text-xs text-zinc-500 mt-0.5">Resets on page refresh</p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-600'}`} />
