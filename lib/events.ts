@@ -22,9 +22,16 @@ type Listener = (event: RequestEvent) => void
 const listeners = new Set<Listener>()
 const recent: RequestEvent[] = []
 const MAX_RECENT = 50
+const MAX_LISTENERS = 100
 
-/** Subscribe to new events. Returns an unsubscribe function. */
-export function subscribe(fn: Listener): () => void {
+/** Current number of active listeners. */
+export function listenerCount(): number {
+  return listeners.size
+}
+
+/** Subscribe to new events. Returns an unsubscribe function, or null if at capacity. */
+export function subscribe(fn: Listener): (() => void) | null {
+  if (listeners.size >= MAX_LISTENERS) return null
   listeners.add(fn)
   // Replay recent events so new subscribers see history immediately
   recent.forEach(fn)

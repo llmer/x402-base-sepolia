@@ -1,10 +1,18 @@
-import { subscribe } from '@/lib/events'
+import { subscribe, listenerCount } from '@/lib/events'
 
 // Force Node.js runtime — SSE needs a persistent connection, not edge/serverless
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export function GET() {
+  // Pre-check: reject early if at connection cap
+  if (listenerCount() >= 100) {
+    return new Response(JSON.stringify({ error: 'Too many SSE connections' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': '30' },
+    })
+  }
+
   const encoder = new TextEncoder()
 
   let unsubscribe: (() => void) | null = null
@@ -24,6 +32,13 @@ export function GET() {
           // Client disconnected — ignore; cancel() will clean up
         }
       })
+
+      // Race condition guard: subscribe() can return null if cap was
+      // reached between the pre-check and the actual subscribe call.
+      if (!unsubscribe) {
+        controller.close()
+        return
+      }
 
       // Keep the connection alive through proxies / load balancers
       heartbeat = setInterval(() => {
