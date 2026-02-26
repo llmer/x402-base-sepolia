@@ -54,13 +54,16 @@ export default function Image() {
         {/* Subtitle */}
         <div
           style={{
+            display: "flex",
+            flexDirection: "column",
             color: "#71717a",
             fontSize: "30px",
             lineHeight: 1.4,
             flex: 1,
           }}
         >
-          Pay-per-request APIs with USDC.{"\n"}No subscriptions. No API keys.
+          <span>Pay-per-request APIs with USDC.</span>
+          <span>No subscriptions. No API keys.</span>
         </div>
 
         {/* Bottom row */}
@@ -76,6 +79,7 @@ export default function Image() {
           {/* curl snippet */}
           <div
             style={{
+              display: "flex",
               background: "#18181b",
               border: "1px solid #27272a",
               color: "#a1a1aa",
@@ -85,8 +89,8 @@ export default function Image() {
               letterSpacing: "0.01em",
             }}
           >
-            <span style={{ color: "#52525b" }}>$ </span>
-            curl -i x402.llmer.com/api/cowsays
+            <span style={{ color: "#52525b" }}>$&nbsp;</span>
+            <span>curl -i x402.llmer.com/api/cowsays</span>
           </div>
 
           {/* Network pill */}
