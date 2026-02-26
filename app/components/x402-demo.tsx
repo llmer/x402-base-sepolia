@@ -244,6 +244,68 @@ function LiveFeed() {
   )
 }
 
+// ─── Facilitator balance banner ──────────────────────────────────────────────
+
+const LOW_ETH_THRESHOLD = 0.005
+
+function FacilitatorBanner() {
+  const [balance, setBalance] = useState<number | null>(null)
+  const [address, setAddress] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function check() {
+      try {
+        const res = await fetch('/api/facilitator/balance')
+        if (!res.ok) return
+        const data = (await res.json()) as { address: string; balance: string }
+        if (cancelled) return
+        setBalance(parseFloat(data.balance))
+        setAddress(data.address)
+      } catch {
+        // silent — banner just won't show
+      }
+    }
+
+    check()
+    const id = setInterval(check, 60_000)
+    return () => { cancelled = true; clearInterval(id) }
+  }, [])
+
+  if (balance === null || balance >= LOW_ETH_THRESHOLD) return null
+
+  return (
+    <div className="border-b border-red-500/20 bg-red-500/5 px-4 py-2.5 text-center">
+      <span className="text-red-400 text-xs font-medium">
+        Facilitator is low on gas — {balance.toFixed(6)} ETH remaining
+      </span>
+      {address && (
+        <span className="text-zinc-500 text-xs ml-3">
+          Send Sepolia ETH to{' '}
+          <a
+            href={`https://sepolia.basescan.org/address/${address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-zinc-300 font-mono"
+          >
+            {shortAddr(address)}
+          </a>
+          {' '}·{' '}
+          <a
+            href="https://faucet.quicknode.com/base/sepolia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-zinc-300"
+          >
+            faucet
+          </a>
+        </span>
+      )}
+    </div>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function X402Demo() {
@@ -470,6 +532,9 @@ export function X402Demo() {
           </a>
         </span>
       </div>
+
+      {/* Low-gas warning — only visible when facilitator ETH is below threshold */}
+      <FacilitatorBanner />
 
       <main className="max-w-2xl mx-auto px-6 py-16 space-y-12">
 
