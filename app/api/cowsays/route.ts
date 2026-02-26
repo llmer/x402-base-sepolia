@@ -7,6 +7,16 @@ import {
   decodePaymentSignatureHeader,
 } from '@x402/core/http'
 import type { PaymentRequirements } from '@x402/core/types'
+import { z } from 'zod'
+import { zodToJsonSchema } from 'zod-to-json-schema'
+
+const CowsaysOutputSchema = z.object({
+  cowsay: z.string().describe('ASCII art cowsay quote'),
+  tx: z.string().describe('On-chain settlement transaction hash'),
+  network: z.string().describe('CAIP-2 network identifier'),
+})
+
+const outputJsonSchema = zodToJsonSchema(CowsaysOutputSchema)
 
 const PRICE = '1000' // 0.001 USDC (6 decimals)
 
@@ -108,11 +118,28 @@ export async function GET(req: Request) {
     const paymentRequired = {
       x402Version: 2 as const,
       resource: {
-        url: new URL(req.url).pathname,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL ?? new URL(req.url).origin}/api/cowsays`,
         description: 'cowsay ASCII art',
         mimeType: 'application/json',
       },
       accepts: [requirements],
+      extensions: {
+        bazaar: {
+          info: {
+            input: null,
+            output: {
+              cowsay:
+                ' ________________________________________\n< Make it work, make it right, make it fast. — Kent Beck >\n ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||',
+              tx: '0xabc123',
+              network: 'eip155:84532',
+            },
+          },
+          schema: {
+            input: null,
+            output: outputJsonSchema,
+          },
+        },
+      },
     }
     return new Response(null, {
       status: 402,
