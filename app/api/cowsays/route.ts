@@ -82,7 +82,7 @@ function cowsay(text: string): string {
   return `${bubble}\n${cow}`
 }
 
-export async function GET(req: Request) {
+async function handler(req: Request) {
   // Default to the facilitator's own address so the demo works without extra config
   let payTo = process.env.PAYTO_ADDRESS
   if (!payTo) {
@@ -141,7 +141,7 @@ export async function GET(req: Request) {
         },
       },
     }
-    return new Response(null, {
+    return Response.json(paymentRequired, {
       status: 402,
       headers: { 'PAYMENT-REQUIRED': encodePaymentRequiredHeader(paymentRequired) },
     })
@@ -221,3 +221,5 @@ export async function GET(req: Request) {
     },
   )
 }
+
+export { handler as GET, handler as POST }
