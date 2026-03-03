@@ -25,6 +25,27 @@ export async function GET() {
             currency: 'USDC',
             network: 'eip155:84532',
           },
+          'x-bazaar': {
+            schema: {
+              input: null,
+              output: {
+                type: 'object',
+                properties: {
+                  cowsay: { type: 'string' },
+                  tx: { type: 'string' },
+                  network: { type: 'string' },
+                },
+              },
+            },
+          },
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: { type: 'object' },
+              },
+            },
+          },
           responses: {
             '200': {
               description: 'Cowsay ASCII art with settlement receipt',
