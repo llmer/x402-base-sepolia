@@ -135,7 +135,7 @@ async function handler(req: Request) {
             },
           },
           schema: {
-            input: null,
+            input: { type: 'object' as const, properties: {} },
             output: outputJsonSchema,
           },
         },

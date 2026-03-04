@@ -27,7 +27,7 @@ export async function GET() {
           },
           'x-bazaar': {
             schema: {
-              input: null,
+              input: { type: 'object', properties: {} },
               output: {
                 type: 'object',
                 properties: {
